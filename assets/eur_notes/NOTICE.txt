@@ -1,0 +1,5 @@
+FlutterPI crashed mit einem SegmentationFault, wenn die Grafiken mit einem 
+Overlay (in diesem Fall werden Noten die nicht akzeptiert werden damit 
+ausgegraut) belegt werden.
+
+Workaround -> "vorgegraute" Grafiken
