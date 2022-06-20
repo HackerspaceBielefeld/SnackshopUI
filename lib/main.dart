@@ -50,7 +50,7 @@ class _SpacebiSnackshopAppState extends State<SpacebiSnackshopApp> {
   @override
   void initState() {
     super.initState();
-    context.read<SnackProvider>().fetchProducts();
+    context.read<SnackProvider>().fetchProducts(false);
   }
 
   @override
@@ -140,7 +140,7 @@ class SpacebiSnackshopMainScreen extends StatelessWidget {
             ElevatedButton(
                 onPressed: () {
                   Provider.of<SnackProvider>(context, listen: false)
-                      .fetchProducts();
+                      .fetchProducts(false);
                 },
                 child: Icon(Icons.refresh)),
           ],

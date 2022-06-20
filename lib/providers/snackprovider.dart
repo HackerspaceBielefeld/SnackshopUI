@@ -19,13 +19,13 @@ class SnackProvider extends ChangeNotifier {
 
   SnackProvider({required this.endpoint, required this.apiKey});
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchProducts(bool withdisabled) async {
     _requestRunning = true;
     //notifyListeners();
     //await Future.delayed(Duration(seconds: 2));
 
     final response = await http.get(
-      Uri.parse(endpoint + 'products'),
+      Uri.parse(endpoint + 'products' + (withdisabled ? '?withdisabled' : '')),
       headers: {'X-Api-Key': apiKey},
     );
 
