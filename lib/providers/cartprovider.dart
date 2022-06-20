@@ -16,42 +16,7 @@ class CartProvider extends ChangeNotifier {
   int get count => _products.length;
   List<CartItem> get products => [..._products];
 
-  CartProvider({required this.endpoint, required this.apiKey}) {
-    RawDatagramSocket.bind('0.0.0.0', 8182).then((RawDatagramSocket udpSocket) {
-      udpSocket.listen((e) {
-        Datagram? dg = udpSocket.receive();
-        String barcode = '';
-        if (dg != null) {
-          dg.data.forEach((element) {
-            if ((element >= 0x30) && (element <= 0x7a)) {
-              barcode += String.fromCharCode(element);
-            }
-          });
-          print(barcode);
-          if (barcode.length > 3) {
-            _fetchProductByEAN(barcode);
-          }
-        }
-      });
-    });
-  }
-
-  Future<void> _fetchProductByEAN(String ean) async {
-    final response = await http.get(
-      Uri.parse(endpoint + 'products/ean/' + ean),
-      headers: {'X-Api-Key': apiKey},
-    );
-
-    if (response.statusCode == 200) {
-      Map<String, dynamic> data = jsonDecode(response.body);
-      if (data.containsKey('id')) {
-        SnackProduct snackProduct = SnackProduct.fromJson(data);
-        addToCart(snackProduct, 1);
-      }
-    } else {
-      print("response not 200");
-    }
-  }
+  CartProvider({required this.endpoint, required this.apiKey});
 
   int _productIndex(SnackProduct product) {
     return _products.indexWhere(

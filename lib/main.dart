@@ -13,6 +13,7 @@ import 'package:spacebisnackshop/screens/maintainancescreen.dart';
 import 'package:spacebisnackshop/screens/payinselectionscreen.dart';
 import 'package:spacebisnackshop/screens/redeemvoucherscreen.dart';
 import 'package:spacebisnackshop/screens/servicetoolsscreen.dart';
+import 'package:spacebisnackshop/providers/barcodeservice.dart';
 
 import 'package:spacebisnackshop/widgets/cartwidget.dart';
 import 'package:spacebisnackshop/widgets/datatransferanimationwidget.dart';
@@ -37,11 +38,14 @@ void main() {
             endpoint: constants.endpoint, apiKey: constants.apikey)),
     ChangeNotifierProvider<NFCProvider>(create: (_) => NFCProvider()),
     ChangeNotifierProvider<NoteProvider>(create: (_) => NoteProvider()),
+    Provider<BarcodeService>(
+      create: (_) => BarcodeService(
+          endpoint: constants.endpoint, apiKey: constants.apikey),
+    )
   ], child: SpacebiSnackshopApp()));
 }
 
 class SpacebiSnackshopApp extends StatefulWidget {
-  // This widget is the root of your application.
   @override
   _SpacebiSnackshopAppState createState() => _SpacebiSnackshopAppState();
 }
@@ -51,6 +55,20 @@ class _SpacebiSnackshopAppState extends State<SpacebiSnackshopApp> {
   void initState() {
     super.initState();
     context.read<SnackProvider>().fetchProducts(false);
+    context
+        .read<BarcodeService>()
+        .defineReceiver(BarcodeServiceReceiverType.cart, (barcode) {
+      context
+          .read<BarcodeService>()
+          .fetchProductByEAN(barcode)
+          .then((SnackProduct? sp) {
+        if (sp != null) {
+          context.read<CartProvider>().addToCart(sp, 1);
+        }
+      });
+    });
+
+    context.read<BarcodeService>().setReceiver(BarcodeServiceReceiverType.cart);
   }
 
   @override
