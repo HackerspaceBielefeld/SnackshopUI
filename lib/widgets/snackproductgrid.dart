@@ -13,8 +13,7 @@ class SnackproductGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SnackProvider snackprovider =
-        Provider.of<SnackProvider>(context, listen: true);
+    SnackProvider snackprovider = Provider.of<SnackProvider>(context, listen: true);
 
     DisplaySizeProvider dsprovider = Provider.of<DisplaySizeProvider>(context);
 
@@ -25,19 +24,16 @@ class SnackproductGrid extends StatelessWidget {
     List<SnackProduct> snackProducts = snackprovider.products;
     snackProducts.sort((l, r) => r.sortweight.compareTo(l.sortweight));
 
-    return Scrollbar(
-      isAlwaysShown: false,
-      child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent:
-                  dsprovider.sizes!['snackGridMaxCrossAxisExtent'] ?? 1,
-              childAspectRatio: 2 / 2,
-              crossAxisSpacing: 2,
-              mainAxisSpacing: 2),
-          itemCount: snackprovider.count,
-          itemBuilder: (ctx, index) {
-            return SnackProductCard(snackProducts[index], onSelected);
-          }),
-    );
+    return GridView.builder(
+        controller: ScrollController(),
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: dsprovider.sizes!['snackGridMaxCrossAxisExtent'] ?? 1,
+            childAspectRatio: 2 / 2,
+            crossAxisSpacing: 2,
+            mainAxisSpacing: 2),
+        itemCount: snackprovider.count,
+        itemBuilder: (ctx, index) {
+          return SnackProductCard(snackProducts[index], onSelected);
+        });
   }
 }
