@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 
@@ -21,6 +22,10 @@ class _NFCCommDialogState extends State<NFCCommDialog>
   late Animation<double> ani;
 
   late Timer closeTimer;
+
+  late Timer troubleTimer;
+  bool inTrouble = false;
+
   bool closeTimerActive = true;
   int autoclose = 30;
 
@@ -57,6 +62,7 @@ class _NFCCommDialogState extends State<NFCCommDialog>
   @override
   void dispose() {
     closeTimer.cancel();
+    troubleTimer.cancel();
     controller.dispose();
     super.dispose();
   }
@@ -78,7 +84,39 @@ class _NFCCommDialogState extends State<NFCCommDialog>
             ')'));
   }
 
+  Widget buildTroubleBox() {
+    return AlertDialog(
+        title: Center(
+            child: Text(
+          'Hobbala',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+        )),
+        content: Column(
+          children: [
+            Expanded(child: Image.asset('assets/img/fu.png')),
+            ElevatedButton(
+                onPressed: () {
+                  Process.start('reboot', [],
+                      runInShell: false,
+                      mode: ProcessStartMode.detachedWithStdio);
+                },
+                child: Text('Reboot System'))
+          ],
+        ));
+  }
+
   Widget buildWait() {
+    if (inTrouble) {
+      return buildTroubleBox();
+    }
+
+    troubleTimer = Timer(Duration(seconds: 20), () {
+      setState(() {
+        inTrouble = true;
+      });
+    });
+
     return AlertDialog(
         title: Center(
             child: Text(
@@ -100,6 +138,10 @@ class _NFCCommDialogState extends State<NFCCommDialog>
   }
 
   Widget buildDataTransfer(BuildContext context) {
+    if (inTrouble) {
+      return buildTroubleBox();
+    }
+
     return AlertDialog(
         title: Center(
             child: Text(
@@ -260,34 +302,37 @@ class _NFCCommDialogState extends State<NFCCommDialog>
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Builder(builder: (context) {
-                SnackshopTransactionList tl = SnackshopTransactionList.fromJSON(
-                    nfcProvider.jsonAnswer!['transactions']);
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Builder(builder: (context) {
+                  SnackshopTransactionList tl =
+                      SnackshopTransactionList.fromJSON(
+                          nfcProvider.jsonAnswer!['transactions']);
 
-                List<DataRow> rows = [];
-                tl.items.forEach((transaction) {
-                  rows.add(DataRow(cells: [
-                    DataCell(Text(DateFormat('dd.MM.yyyy kk:mm')
-                        .format(transaction.datetime))),
-                    DataCell(Text(transaction.usagetext)),
-                    DataCell(
-                        Text(transaction.amount.toStringAsFixed(2) + ' SC')),
-                    DataCell(Text(
-                        transaction.newbalance.toStringAsFixed(2) + ' SC')),
-                  ]));
-                });
+                  List<DataRow> rows = [];
+                  tl.items.forEach((transaction) {
+                    rows.add(DataRow(cells: [
+                      DataCell(Text(DateFormat('dd.MM.yyyy kk:mm')
+                          .format(transaction.datetime))),
+                      DataCell(Text(transaction.usagetext)),
+                      DataCell(
+                          Text(transaction.amount.toStringAsFixed(2) + ' SC')),
+                      DataCell(Text(
+                          transaction.newbalance.toStringAsFixed(2) + ' SC')),
+                    ]));
+                  });
 
-                return FittedBox(
-                  child: DataTable(columns: [
-                    DataColumn(label: Text('Datum')),
-                    DataColumn(label: Text('Verwendungszweck')),
-                    DataColumn(label: Text('Betrag')),
-                    DataColumn(label: Text('Saldo'))
-                  ], rows: rows),
-                );
-              }),
+                  return FittedBox(
+                    child: DataTable(columns: [
+                      DataColumn(label: Text('Datum')),
+                      DataColumn(label: Text('Verwendungszweck')),
+                      DataColumn(label: Text('Betrag')),
+                      DataColumn(label: Text('Saldo'))
+                    ], rows: rows),
+                  );
+                }),
+              ),
             ),
             autocloseBtn(),
           ],

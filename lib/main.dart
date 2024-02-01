@@ -76,6 +76,7 @@ class _SpacebiSnackshopAppState extends State<SpacebiSnackshopApp> {
     return MaterialApp(
       title: 'Space.bi Snackshop',
       theme: ThemeData(
+        useMaterial3: false,
         primarySwatch: Colors.yellow,
         textTheme: TextTheme(
           caption: TextStyle(fontSize: 8.0),

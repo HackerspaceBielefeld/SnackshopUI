@@ -41,6 +41,13 @@ class _DataTransferAnimationWidgetState
   late Widget midBubble;
   late Widget highlightBubble;
 
+  @override
+  void dispose() {
+    _animationController.stop();
+    _animationController.dispose();
+    super.dispose();
+  }
+
   Widget x1 = Container(
     padding: EdgeInsets.all(8),
     decoration: BoxDecoration(
@@ -88,13 +95,6 @@ class _DataTransferAnimationWidgetState
     highlightBubble = bubble(widget.highlightColor);
 
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    _animationController.dispose();
   }
 
   Widget bubble(Color _color) {

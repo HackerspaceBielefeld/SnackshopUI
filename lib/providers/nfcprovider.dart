@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:spacebisnackshop/models/cartitem.dart';
 
 enum NFCProviderState { WaitForTag, DataExchange, Error, Success }
+
 enum NFCBinary { Transactionreader, Exectransaction, FinanceTokenReader }
 
 const Map<String, String> basepath = {
-  'linux': '/opt/spacenfc',
-  'windows': 'C:\\Users\\bjoern\\Desktop\\mftest'
+  'linux': '/opt/SpaceNFC',
+  'windows': 'C:\\projects\\snackshopgui\\testtools\\mifaretest'
 };
 
 const Map<String, String> errorMessages = {
@@ -18,6 +19,7 @@ const Map<String, String> errorMessages = {
   'connfailed': 'Serververbindung fehlgeschlagen',
   'noprice': 'Preisfehler',
   'readerror': 'Tag Lesefehler',
+  'readfailed': 'Tag Lesefehler',
   'timeout': 'Zeitüberschreitung',
   'not_found': 'Daten nicht gefunden',
   'invalid_cart': 'Ungültiger Warenkorb',

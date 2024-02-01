@@ -1,9 +1,38 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart' as http;
 import 'dart:convert';
-import 'package:spacebisnackshop/models/snackproduct.dart';
+import '../models/snackproduct.dart';
+
+import '../constants.dart' as constants;
+
+bool? acceptAPICertErrors;
+
+bool _badCertificateCallback(X509Certificate cert, String host, int port) {
+  debugPrint('cert error');
+  debugPrint(cert.sha1.toString());
+
+  debugPrint(host);
+
+  return constants.ignoreBadCerts;
+}
+
+http.Client get httpex {
+  if (kIsWeb) {
+    return http.Client();
+  }
+
+  var ioClient = HttpClient();
+
+  ioClient.badCertificateCallback = _badCertificateCallback;
+
+  ioClient.userAgent = 'Dart/API';
+
+  return http.IOClient(ioClient);
+}
 
 class SnackProvider extends ChangeNotifier {
   final String endpoint;
@@ -24,7 +53,7 @@ class SnackProvider extends ChangeNotifier {
     //notifyListeners();
     //await Future.delayed(Duration(seconds: 2));
 
-    final response = await http.get(
+    final response = await httpex.get(
       Uri.parse(endpoint + 'products' + (withdisabled ? '?withdisabled' : '')),
       headers: {'X-Api-Key': apiKey},
     );

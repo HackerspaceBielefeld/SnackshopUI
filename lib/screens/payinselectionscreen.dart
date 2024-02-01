@@ -5,6 +5,8 @@ import 'package:spacebisnackshop/screens/payindonationscreen.dart';
 import 'payinmembershipfeescreen.dart';
 import 'payinsnackshopscreen.dart';
 
+import '../constants.dart' as constants;
+
 class PayInSelectionScreen extends StatelessWidget {
   Widget payInCard(
       IconData icon, String text, bool enabled, void Function() tap) {
@@ -52,7 +54,8 @@ class PayInSelectionScreen extends StatelessWidget {
           crossAxisCount: 3,
           childAspectRatio: 2 / 1,
           children: [
-            payInCard(MdiIcons.ticket, 'Code einlösen', true, () {
+            payInCard(MdiIcons.ticket, 'Code einlösen',
+                constants.payInConfig['redeemvoucher'] ?? false, () {
               Navigator.pushReplacementNamed(context, '/redeemvoucher');
             }),
             payInCard(MdiIcons.food, 'Snackkonto aufladen (Bar)', true, () {
@@ -62,18 +65,18 @@ class PayInSelectionScreen extends StatelessWidget {
                       builder: (BuildContext context) =>
                           PayInSnackshopScreen()));
             }),
-            payInCard(MdiIcons.creditCard, 'Snackkonto aufladen (SEPA)', false,
-                () {}),
-            payInCard(
-                MdiIcons.scriptTextOutline, 'Mitgliedsbeitrag bezahlen', true,
-                () {
+            payInCard(MdiIcons.creditCard, 'Snackkonto aufladen (SEPA)',
+                constants.payInConfig['payinsepa'] ?? false, () {}),
+            payInCard(MdiIcons.scriptTextOutline, 'Mitgliedsbeitrag bezahlen',
+                constants.payInConfig['payinmembershipfee'] ?? false, () {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (BuildContext context) =>
                           PayInMembershipfeeScreen()));
             }),
-            payInCard(MdiIcons.gift, 'Spenden', true, () {
+            payInCard(MdiIcons.gift, 'Spenden',
+                constants.payInConfig['donation'] ?? false, () {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
